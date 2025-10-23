@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Car Insurance Fraud Prediction</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+  <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/in/in-all.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2a5ee8;
+      --secondary: #0f1b5c;
+      --accent: #ff6b00;
+      --light: #f8f9ff;
+      --dark: #0a0e2e;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #fd7e14;
+      --info: #17a2b8;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7ff;
+      color: var(--dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+      padding: 15px 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo i {
+      margin-right: 10px;
+      color: var(--accent);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      font-size: 15px;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 5px 0;
+    }
+    
+    nav a:hover {
+      color: var(--accent);
+    }
+    
+    nav a:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      bottom: 0;
+      left: 0;
+      transition: width 0.3s ease;
+    }
+    
+    nav a:hover:after {
+      width: 100%;
+    }
+    
+    .section {
+      padding: 100px 20px;
+      display: none;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Hero Section */
+    #home {
+      display: block;
+      padding-top: 150px;
+      background: linear-gradient(to bottom, #f5f7ff, #e8ecff);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    
+    .hero-text {
+      flex: 1;
+      min-width: 300px;
+      padding-right: 40px;
+      animation: fadeInLeft 1s ease;
+    }
+    
+    .hero-text h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--secondary);
+      line-height: 1.2;
+    }
+    
+    .hero-text p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    
+    .hero-image {
+      flex: 1;
+      min-width: 300px;
+      animation: fadeInRight 1s ease;
+    }
+    
+    .hero-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: var(--accent);
+      color: white;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 107, 0, 0.3);
+    }
+    
+    .btn:hover {
+      background: #e05d00;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+    }
+    
+    .btn-secondary {
+      background: var(--primary);
+      box-shadow: 0 5px 15px rgba(42, 94, 232, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: #1a4fd1;
+      box-shadow: 0 8px 20px rgba(42, 94, 232, 0.4);
+    }
+    
+    /* Stats Cards */
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 60px 0;
+      gap: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--primary);
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover:before {
+      width: 100%;
+      opacity: 0.1;
+    }
+    
+    .stat-card h3 {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    
+    .stat-card .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+    
+    .stat-card .stat-icon {
+      font-size: 40px;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    
+    /* Testimonials */
+    .testimonials {
+      background: white;
+      padding: 80px 0;
+      margin: 60px 0;
+      position: relative;
+    }
+    
+    .testimonials:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://preview.themeforest.net/item/autowa-car-insurance-unbounce-landing-page-template/full_screen_preview/29483924?_ga=2.64774954.464328176.1745137675-335501261.1745137675') no-repeat center/cover;
+      opacity: 0.03;
+      z-index: 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-title h2 {
+      font-size: 36px;
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+    
+    .section-title p {
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .testimonial-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .testimonial-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      border: 1px solid #eee;
+    }
+    
+    .testimonial-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .testimonial-card:before {
+      content: '"';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 60px;
+      color: var(--primary);
+      opacity: 0.1;
+      font-family: serif;
+      line-height: 1;
+    }
+    
+    .testimonial-card p {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+    }
+    
+    .testimonial-author img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+      border: 3px solid var(--primary);
+    }
+    
+    .author-info h4 {
+      font-size: 18px;
+      color: var(--secondary);
+      margin-bottom: 5px;
+    }
+    
+    .author-info p {
+      font-size: 14px;
+      color: #777;
+      margin: 0;
+      font-style: normal;
+    }
+    
+    /* Sponsors */
+    .sponsors {
+      padding: 60px 0;
+      background: #f8f9ff;
+    }
+    
+    .sponsor-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+    
+    .sponsor-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 180px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+      transition: all 0.3s ease;
+    }
+    
+    .sponsor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sponsor-card img {
+      max-width: 100%;
+      max-height: 60px;
+      filter: grayscale(100%);
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    
+    .sponsor-card:hover img {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+    
+    /* Prediction Form */
+    #predict {
+      background: linear-gradient(to bottom, #f5f7ff, #e8ecff);
+    }
+    
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 1s ease;
+    }
+    
+    .form-container h2 {
+      text-align: center;
+      color: var(--secondary);
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
+      outline: none;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .result-fraud {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+    }
+    
+    .result-legit {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+    }
+    
+    /* Charts Section */
+    .chart-section {
+      background: #f8f9ff;
+    }
+    
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    
+    .chart-container {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 350px;
+    }
+    
+    .chart-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chart-container h3 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+      font-size: 18px;
+      text-align: center;
+    }
+    
+    /* Map Section */
+    #mapContainer {
+      height: 600px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      margin-top: 40px;
+      overflow: hidden;
+    }
+    
+    /* About Section */
+    #about {
+      background: linear-gradient(to bottom, #f5f7ff, #e8ecff);
+    }
+    
+    .about-content {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    
+    .about-text {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .about-text h2 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+      font-size: 36px;
+    }
+    
+    .about-text p {
+      margin-bottom: 20px;
+      color: #555;
+    }
+    
+    .about-image {
+      flex: 1;
+      min-width: 300px;
+      text-align: center;
+    }
+    
+    .about-image img {
+      max-width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Contact Section */
+    .contact-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    
+    .contact-info {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .contact-info h3 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    
+    .contact-details {
+      margin-top: 30px;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .contact-item i {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 20px;
+    }
+    
+    .contact-item div h4 {
+      color: var(--secondary);
+      margin-bottom: 5px;
+    }
+    
+    .contact-item div p {
+      color: #666;
+    }
+    
+    /* FAQ Section */
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .faq-item {
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    
+    .faq-question {
+      padding: 20px;
+      font-weight: 600;
+      color: var(--secondary);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .faq-question:hover {
+      background: #f8f9ff;
+    }
+    
+    .faq-question:after {
+      content: '+';
+      position: absolute;
+      right: 20px;
+      font-size: 20px;
+      color: var(--primary);
+    }
+    
+    .faq-item.active .faq-question:after {
+      content: '-';
+    }
+    
+    .faq-answer {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 0 20px 20px;
+      max-height: 500px;
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        padding: 15px;
+      }
+      
+      nav {
+        margin-top: 15px;
+      }
+      
+      nav a {
+        margin: 0 10px;
+      }
+      
+      .hero-content {
+        flex-direction: column;
+      }
+      
+      .hero-text {
+        padding-right: 0;
+        margin-bottom: 40px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-car-crash"></i>
+        <span>FraudShield</span>
+      </div>
+      <nav>
+        <a href="#home" onclick="showSection('home')">Home</a>
+        <a href="#predict" onclick="showSection('predict')">Predict</a>
+        <a href="#insights" onclick="showSection('insights')">Insights</a>
+        <a href="#state" onclick="showSection('state')">State Data</a>
+        <a href="#about" onclick="showSection('about')">About</a>
+        <a href="#contact" onclick="showSection('contact')">Contact</a>
+        <a href="/admin" target="_blank" class="btn btn-secondary" style="margin-left: 15px;">Admin Login</a>
+
+      </nav>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <div id="home" class="section" style="display:block">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Advanced AI-Powered Car Insurance Fraud Detection</h1>
+          <p>Our cutting-edge machine learning algorithms analyze claim patterns to detect fraudulent activities with over 92% accuracy, saving millions in false claims.</p>
+          <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <a href="#predict" onclick="showSection('predict')" class="btn">Predict Fraud</a>
+            <a href="#insights" onclick="showSection('insights')" class="btn btn-secondary">View Insights</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/18177541-car-img-01_1000000000000000000028.png" alt="Fraud Detection Dashboard" class="floating">
+        </div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+          <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="stat-number">5,500</div>
+          <h3>Total Claims</h3>
+        </div>
+        <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+          <div class="stat-icon"><i class="fas fa-user-secret"></i></div>
+          <div class="stat-number">1,500</div>
+          <h3>Fraudulent</h3>
+        </div>
+        <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-number">4,000</div>
+          <h3>Legitimate</h3>
+        </div>
+        <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+          <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+          <div class="stat-number">₹42M</div>
+          <h3>Savings</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonials">
+      <div class="container">
+        <div class="section-title">
+          <h2>What Our Clients Say</h2>
+          <p>Trusted by leading insurance companies across India</p>
+        </div>
+        <div class="testimonial-container">
+          <div class="testimonial-card animate__animated animate__fadeInUp">
+            <p>This platform has revolutionized our claims processing. The fraud detection accuracy is remarkable, and it's saved us countless hours in manual review.</p>
+            <div class="testimonial-author">
+              <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Anjali Verma">
+              <div class="author-info">
+                <h4>Anjali Verma</h4>
+                <p>Claims Manager, ICICI Lombard</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+            <p>The interactive dashboard and visualizations make it incredibly easy to understand claim patterns and identify suspicious activities quickly.</p>
+            <div class="testimonial-author">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rohit Mehra">
+              <div class="author-info">
+                <h4>Rohit Mehra</h4>
+                <p>Insurance Analyst, HDFC ERGO</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+            <p>Implementation was seamless and the results were immediate. We saw a 40% reduction in fraudulent claims within the first quarter of using this system.</p>
+            <div class="testimonial-author">
+              <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sunita Rao">
+              <div class="author-info">
+                <h4>Sunita Rao</h4>
+                <p>Regional Officer, Bajaj Allianz</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sponsors">
+      <div class="container">
+        <div class="section-title">
+          <h2>Our Technology Partners</h2>
+          <p>Collaborating with industry leaders to deliver the best solutions</p>
+        </div>
+        <div class="sponsor-container">
+          <div class="sponsor-card">
+            <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/88f302dd-d60b6173-1-000000000000000000001_1000000000000000000028.png" alt="FraudGuard Pro">
+          </div>
+          <div class="sponsor-card">
+            <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/62303b73-bd2581f6-6-000000000000000000001_1000000000000000000028.png" alt="Analytics X">
+          </div>
+          <div class="sponsor-card">
+            <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/fbe4ff0c-6bdc1c4c-2-000000000000000000001_1000000000000000000028.png" alt="SecureCover">
+          </div>
+          <div class="sponsor-card">
+            <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/357cc7aa-febaa9ec-4-000000000000000000001_1000000000000000000028.png" alt="InsureAI">
+          </div>
+          <div class="sponsor-card">
+            <img src="http://d9hhrg4mnvzow.cloudfront.net/unbouncepages.com/autowa/64a7539c-73b0b618-3-000000000000000000001_1000000000000000000028.png" alt="DataShield">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-bottom: 80px;">
+      <div class="section-title">
+        <h2>Frequently Asked Questions</h2>
+        <p>Find answers to common questions about our fraud detection system</p>
+      </div>
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">How accurate is the fraud prediction?</div>
+          <div class="faq-answer">
+            <p>Our system uses advanced machine learning models with over 92% accuracy on real-world datasets. We continuously train our models with new data to maintain and improve this accuracy rate.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Is my data secure with your system?</div>
+          <div class="faq-answer">
+            <p>Absolutely. We use bank-grade 256-bit encryption for all data in transit and at rest. Our systems are regularly audited for security compliance and we follow all industry-standard security protocols.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Can I integrate this with my existing CRM?</div>
+          <div class="faq-answer">
+            <p>Yes, we provide comprehensive APIs and integration tools to connect seamlessly with most CRM platforms, claims management systems, and internal databases.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">What kind of support do you offer?</div>
+          <div class="faq-answer">
+            <p>We provide 24/7 technical support with a dedicated account manager for enterprise clients. Our average response time is under 30 minutes for critical issues.</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+<div style="box-sizing: border-box;">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19863.543745950225!2d78.463216!3d17.447889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9be6f63d89db%3A0x566bf7312e9c2222!2sMahatma%20Gandhi%20Institute%20of%20Technology%2C%20Hyderabad!5e0!3m2!1sen!2sin!4v1714236871722!5m2!1sen!2sin" 
+    width="100%" 
+    height="350" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+  </div
+  
+
+  <!-- PREDICT -->
+  <div id="predict" class="section">
+    <div class="container">
+      <div class="form-container">
+        <h2>Fraud Prediction Form</h2>
+        <form id="predictionForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="credit_score">Credit Score</label>
+              <input type="number" id="credit_score" placeholder="Enter credit score (300-900)" min="300" max="900" required>
+            </div>
+            <div class="form-group">
+              <label for="age">Policy Holder Age</label>
+              <input type="number" id="age" placeholder="Enter age" min="18" max="100" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="experience">Driving Experience (years)</label>
+              <input type="number" id="experience" placeholder="Years of experience" min="0" max="70" required>
+            </div>
+            <div class="form-group">
+              <label for="speeding">Speeding Violations</label>
+              <input type="number" id="speeding" placeholder="Number of speeding tickets" min="0" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="accidents">Past Accidents</label>
+              <input type="number" id="accidents" placeholder="Number of past accidents" min="0" required>
+            </div>
+            <div class="form-group">
+              <label for="severity">Accident Severity (1-10)</label>
+              <input type="number" id="severity" placeholder="Severity rating" min="1" max="10" required>
+            </div>
+          </div>
+          
+          
+            
+            <div class="form-group">
+              <label for="gender">Gender (1-Male 0-Female)</label>
+              <input type="text" id="gender" placeholder="Gender" required>
+            </div>
+            
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="drunk">Drunken Drive Incidents (1-Yes or 0-No)</label>
+              <input type="number" id="drunk" placeholder="Number of DUI offenses" min="0" required>
+            </div>
+            <div class="form-group">
+              <label for="premium">Premium Amount (₹)</label>
+              <input type="number" id="premium" placeholder="Annual premium amount" min="0" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn" style="width: 100%;">Predict Fraud Probability</button>
+        </form>
+        
+        <div id="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div id="insights" class="section chart-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Fraud Detection Insights</h2>
+        <p>Visual analytics to identify patterns and trends in insurance claims</p>
+      </div>
+      
+      <div class="chart-grid">
+        <div class="chart-container animate__animated animate__fadeIn">
+          <h3>Claim Distribution</h3>
+          <canvas id="claimChart"></canvas>
+        </div>
+        <div class="chart-container animate__animated animate__fadeIn" style="animation-delay: 0.1s">
+          <h3>Severity vs Claims</h3>
+          <canvas id="severityChart"></canvas>
+        </div>
+        <div class="chart-container animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+          <h3>Customer Gender</h3>
+          <canvas id="genderChart"></canvas>
+        </div>
+        <div class="chart-container animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+          <h3>Credit Score Distribution</h3>
+          <canvas id="creditChart"></canvas>
+        </div>
+        <div class="chart-container animate__animated animate__fadeIn" style="animation-delay: 0.4s">
+          <h3>Claim Amounts</h3>
+          <canvas id="claimAmountChart"></canvas>
+        </div>
+        <div class="chart-container animate__animated animate__fadeIn" style="animation-delay: 0.5s">
+          <h3>Top Claim Types</h3>
+          <canvas id="claimTypeChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE RECORDS -->
+  <div id="state" class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>State-wise Insurance Fraud & Claims</h2>
+        <p>Geographical distribution of fraudulent claims across India</p>
+      </div>
+      <div id="mapContainer"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="about" class="section">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <h2>About FraudShield</h2>
+          <p>FraudShield is an advanced AI-powered platform designed to detect and prevent car insurance fraud. Our mission is to help insurance companies reduce losses from fraudulent claims while improving efficiency in claims processing.</p>
+          <p>Using cutting-edge machine learning algorithms trained on millions of historical claims, FraudShield identifies suspicious patterns and anomalies with industry-leading accuracy.</p>
+          <p>Our team consists of data scientists, insurance experts, and software engineers with decades of combined experience in fraud detection and prevention.</p>
+          <div style="margin-top: 30px;">
+            <a href="#contact" onclick="showSection('contact')" class="btn">Contact Our Team</a>
+          </div>
+        </div>
+        <div class="about-image">
+          <img src="https://www.icicilombard.com/docs/default-source/apps/fwfresh/fw-landing/images/il-what-car-insurance.svg" alt="About FraudShield">
+        </div>
+      </div>
+    </div>
+    <!-- OUR EXPERT -->
+    <div class="container">
+      <div class="section-title">
+        <h2>Our Expert</h2>
+        <p>Meet the brain behind our fraud detection intelligence</p>
+      </div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 40px;">
+        <div style="flex: 1; min-width: 250px; text-align: center;">
+          <img src="https://media.licdn.com/dms/image/v2/C4D03AQE_Qk8gMjkiSg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1517232880082?e=1750896000&v=beta&t=wweHC-u0pgmp0P8uZkfuyLcJbOJl6Z_Mm1qrxlQpHzs" alt="Expert Photo" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 4px solid #020100;">
+        </div>
+        <div style="flex: 2; min-width: 300px;">
+          <h3 style="color: var(--secondary); font-size: 26px; margin-bottom: 10px;">Dr. T V RAJINI KANTH</h3>
+          <p style="color: #555; font-size: 16px;"><strong>Professor & Convener RDC</strong></p>
+          <p style="margin-top: 15px; color: #666;">Professor & Convener at MGIT Hyderabad, holds a Ph.D. in Computer Science from Osmania University with 28 years of teaching and 16 years of research experience.
+
+            He previously led the CSE–AI & ML department at SNIST and has successfully guided 12 awarded Ph.D. scholars.</p>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <!-- CONTACT -->
+  <div id="contact" class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Contact Us</h2>
+        <p>Get in touch with our team for more information</p>
+      </div>
+      
+      <div class="contact-container">
+        <div class="contact-info">
+          <br>
+          <br>
+          <br>
+          <br>
+          <h3>Let's talk about how we can help you</h3>
+          <p>Have questions about our fraud detection platform or want to see a demo? Fill out the form or contact us directly.</p>
+          
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <h4>Our Office</h4>
+                <p>123 Tech Park, Bangalore, Karnataka 560001, India</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone-alt"></i>
+              <div>
+                <h4>Phone</h4>
+                <p>+91 80 1234 5678</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <h4>Email</h4>
+                <p>info@fraudshield.ai</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-container" style="flex: 1; min-width: 300px;">
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" placeholder="Enter subject">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" rows="5" placeholder="Enter your message" required></textarea>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- OUR EXPERTS -->
+
+  <!-- OUR EXPERTS -->
+
+  
+    <div class="section-title">
+      <br>
+      <br>
+      <br>
+      <h2>Our Team</h2>
+      <p>Meet the developers behind our Fraud Detection intelligence</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+      
+      <!-- Expert 1 -->
+      <div style="background: white; width: 240px; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQFa8e3YrZOcFA/profile-displayphoto-shrink_400_400/B4DZZcOwMhHIAo-/0/1745304097862?e=1750896000&v=beta&t=PlM0QVtHdxeyoGsN1R5SzvPOSLl-0SF7A1oxj9-8Knw" alt="Dr. Arvind Kumar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #2a5ee8;">
+        <h3 style="font-size: 16px; color: var(--secondary); margin-top: 10px;">G Vivekananda</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 4px;"><strong>Team Lead & Data Scientist</strong></p>
+        <p style="font-size: 13px; color: #555;">Team Lead & Data Scientist with a focus on data analytics, and end-to-end model development and deployment.</p>
+      </div>
+
+      <!-- Expert 2 -->
+      <div style="background: white; width: 240px; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <img src="https://imagizer.imageshack.com/img923/9554/j3tGB0.jpg" alt="Ms. Neha Mehta" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #2a5ee8;">
+        <h3 style="font-size: 16px; color: var(--secondary); margin-top: 10px;">K Adhi Keshav</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 4px;"><strong>Frontend Developer</strong></p>
+        <p style="font-size: 13px; color: #555;">Frontend Developer specializing in creating intuitive user interfaces, with expertise in HTML, CSS, JavaScript.</p>
+      </div>
+
+      <!-- Expert 3 -->
+      <div style="background: white; width: 240px; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <img src="https://media.licdn.com/dms/image/v2/D4E03AQG-tcNrJVGU7w/profile-displayphoto-shrink_400_400/B4EZZEJhZrHMAk-/0/1744900069313?e=1750896000&v=beta&t=rDZTc8-XnyFNvTOv-UVHQjWS0AgES_r-zHX86JB5txA" alt="Rajesh Iyer" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #2a5ee8;">
+        <h3 style="font-size: 16px; color: var(--secondary); margin-top: 10px;">G Raghunath</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 4px;"><strong>Django Developer</strong></p>
+        <p style="font-size: 13px; color: #555;">Django Developer with expertise in building robust web applications, focusing on backend development, database integration.</p>
+      </div>
+
+      <!-- Expert 4 -->
+      <div style="background: white; width: 240px; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <img src="https://imagizer.imageshack.com/img922/7585/zRhldC.jpg" alt="Amit Verma" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #2a5ee8;">
+        <h3 style="font-size: 16px; color: var(--secondary); margin-top: 10px;">A Vinay Kumar</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 4px;"><strong>ML Engineer & Data Scientist</strong></p>
+        <p style="font-size: 13px; color: #555;">Machine Learning Developer with expertise in building predictive algorithms to create scalable and accurate models for decision-making.</p>
+      </div>
+
+    </div>
+  
+</div>
+
+  </div>
+
+
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    
+  document.getElementById('predictionForm').addEventListener('submit', predictFraud);
+
+  async function predictFraud(event) {
+    event.preventDefault();
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Analyzing claim data...</p>`;
+    resultDiv.className = '';
+
+    const data = {
+      credit_score: parseFloat(document.getElementById("credit_score").value),
+      age: parseInt(document.getElementById("age").value),
+      experience: parseInt(document.getElementById("experience").value),
+      speeding: parseInt(document.getElementById("speeding").value),
+      accidents: parseInt(document.getElementById("accidents").value),
+      severity: parseInt(document.getElementById("severity").value),
+      gender: document.getElementById("gender").value.toLowerCase() === 'male' ? 1 : 0,
+      drunk: parseInt(document.getElementById("drunk").value) > 0 ? 1 : 0,
+      premium: parseFloat(document.getElementById("premium").value),
+    };
+
+    try {
+      const response = await fetch("/predict/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (result.error) {
+        resultDiv.innerHTML = `<p>❌ Server Error: ${result.error}</p>`;
+        resultDiv.className = 'result-fraud';
+        return;
+      }
+
+      resultDiv.innerHTML = `
+        <p><strong>Prediction:</strong> ${result.prediction === "Fraudulent" ? "🚨 Fraudulent" : "✅ Legitimate"}</p>
+        <p><strong>Fraud Probability:</strong> ${(result.fraud_probability * 100).toFixed(2)}%</p>
+        <p><strong>Threshold:</strong> ${(result.threshold * 100).toFixed(2)}%</p>
+        <p><strong>Eligible Payout:</strong> ₹${result.eligible_payout.toLocaleString()}</p>
+      `;
+      resultDiv.className = result.prediction === "Fraudulent" ? 'result-fraud' : 'result-legit';
+
+    } catch (err) {
+      resultDiv.innerHTML = `<p>❌ Error: ${err.message}</p>`;
+      resultDiv.className = 'result-fraud';
+    }
+  }
+
+  function getCSRFToken() {
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+    return cookie ? cookie.split('=')[1] : '';
+  }
+
+
+    // Handle FAQ toggle
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        item.classList.toggle('active');
+      });
+    });
+
+    // Initialize charts after page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // India Map
+      Highcharts.mapChart('mapContainer', {
+        chart: { 
+          map: 'countries/in/in-all',
+          backgroundColor: 'transparent'
+        },
+        title: { 
+          text: 'State-wise Fraud & Claims Data in India'
+        },
+        colorAxis: { 
+          min: 0, 
+          stops: [[0, '#EFEFFF'],[0.5, '#4444FF'],[1, '#000022']]
+        },
+        series: [{
+          data: [
+            ['in-up',800],['in-mh',700],['in-br',300],
+            ['in-wb',500],['in-tn',600],['in-hr',400],
+            ['in-ka',650],['in-rj',550],['in-gj',480],
+            ['in-ap',430],['in-mp',380],['in-kl',420],
+            ['in-or',350],['in-pb',320],['in-ct',280]
+          ],
+          name: 'Total Claims',
+          states: { 
+            hover: { 
+              color: '#BADA55'
+            } 
+          },
+          dataLabels: { 
+            enabled: true, 
+            format: '{point.name}' 
+          }
+        }]
+      });
+
+      // Charts
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font: {
+                family: 'Poppins'
+              },
+              padding: 20
+            }
+          }
+        }
+      };
+
+      new Chart(document.getElementById('claimChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Legitimate', 'Fraudulent'],
+          datasets: [{
+            data: [4000, 1500],
+            backgroundColor: ['#28a745', '#dc3545'],
+            borderWidth: 0,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          ...chartOptions,
+          cutout: '70%'
+        }
+      });
+
+      new Chart(document.getElementById('severityChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Low', 'Medium', 'High', 'Critical'],
+          datasets: [{
+            data: [2500, 1200, 700, 100],
+            backgroundColor: ['#17a2b8', '#ffc107', '#fd7e14', '#dc3545'],
+            borderWidth: 0,
+            borderRadius: 6
+          }]
+        },
+        options: chartOptions
+      });
+
+      new Chart(document.getElementById('genderChart'), {
+        type: 'pie',
+        data: {
+          labels: ['Male', 'Female', 'Other'],
+          datasets: [{
+            data: [3200, 2300, 500],
+            backgroundColor: ['#2a5ee8', '#e83e8c', '#6f42c1'],
+            borderWidth: 0,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          ...chartOptions,
+          cutout: '60%'
+        }
+      });
+
+      new Chart(document.getElementById('creditChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Excellent', 'Good', 'Fair', 'Poor'],
+          datasets: [{
+            data: [1500, 2200, 1000, 500],
+            backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545'],
+            borderWidth: 0,
+            borderRadius: 6
+          }]
+        },
+        options: chartOptions
+      });
+
+      new Chart(document.getElementById('claimAmountChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Fraudulent Claims', 'Legitimate Claims'],
+          datasets: [{
+            data: [800000, 4000000],
+            backgroundColor: ['#dc3545', '#28a745'],
+            borderWidth: 0,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          ...chartOptions,
+          scales: {
+            y: {
+              ticks: {
+                callback: function(value) {
+                  return '₹' + (value / 1000000) + 'M';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      new Chart(document.getElementById('claimTypeChart'), {
+        type: 'polarArea',
+        data: {
+          labels: ['Accident', 'Theft', 'Fire', 'Vandalism', 'Natural Disaster'],
+          datasets: [{
+            data: [3000, 1500, 500, 200, 300],
+            backgroundColor: ['#2a5ee8', '#17a2b8', '#ffc107', '#e83e8c', '#28a745'],
+            borderWidth: 0
+          }]
+        },
+        options: chartOptions
+      });
+    });
+
+    // Animate elements when they come into view
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.animate__animated');
+      
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if (elementPosition < screenPosition) {
+          element.style.visibility = 'visible';
+          element.classList.add(element.getAttribute('data-animation'));
+        }
+      });
+    };
+
+    // Set initial visibility to hidden for animated elements
+    document.querySelectorAll('.animate__animated').forEach(el => {
+      el.style.visibility = 'hidden';
+    });
+
+    window.addEventListener('scroll', animateOnScroll);
+    animateOnScroll(); // Run once on load
+    
+  document.getElementById("contactForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const data = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      subject: document.getElementById("subject").value,
+      message: document.getElementById("message").value,
+    };
+
+    try {
+      const response = await fetch("/contact/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken()
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("✅ Your message has been sent!");
+        document.getElementById("contactForm").reset();
+      } else {
+        alert("❌ Error: " + result.error);
+      }
+    } catch (err) {
+      alert("Something went wrong: " + err);
+    }
+  });
+
+
+  </script>
+</body>
+</html>
